@@ -20,10 +20,11 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "../Lib/periferije/gpio/gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -92,14 +93,22 @@ main (void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init ();
   /* USER CODE BEGIN 2 */
-
+  // gpio_init ();
+  // timer_init ();
+  // uart_init ();
+  // ....
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
     {
+
+      GPIOA->ODR ^= (0b1 << 5);
+      LL_mDelay (1000);
+
       /* USER CODE END WHILE */
 
       /* USER CODE BEGIN 3 */
