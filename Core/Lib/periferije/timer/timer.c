@@ -20,9 +20,9 @@ timer_init ()
 static void
 tim10_init ()
 {
-  RCC->APB2ENR |= (0b1 << 17); // Uključujemo takt na tim10 periferiji
+  RCC->APB2ENR |= (0b1 << 17); // Uključivanje takta za tajmer 10
 
-  TIM10->CR1 &= ~(0b1 << 2); // Šta može da resetuje tajmer
+  TIM10->CR1 &= ~(0b1 << 2); // Šta može da resetuje (reinicijalizuje) tajmer
   TIM10->CR1 &= ~(0b1 << 1); // Dozvola događaja
 
   // Željena vrednost takta: 1kHz
@@ -36,5 +36,5 @@ tim10_init ()
   while (!(TIM10->SR & (0b1 << 0))); // Čekanje da se izvrši reinicijalizacija tajmera
   TIM10->SR &= ~(0b1 << 0); // Resetovanje statusnog bita
 
-  TIM10->CR1 |= (0b1 << 2); // Zabrana resetovanja (reinicijalizacije) tajmera
+  TIM10->CR1 |= (0b1 << 2); // "Zabrana" resetovanja (reinicijalizacije) tajmera
 }
