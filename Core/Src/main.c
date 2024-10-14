@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "../Lib/periferije/gpio/gpio.h"
+#include "../Lib/periferije/timer/timer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,7 +97,7 @@ main (void)
   MX_GPIO_Init ();
   /* USER CODE BEGIN 2 */
   // gpio_init ();
-  // timer_init ();
+   timer_init ();
   // uart_init ();
   // ....
   /* USER CODE END 2 */
