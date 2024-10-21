@@ -7,9 +7,16 @@
 
 #include "timer.h"
 #include "stm32f4xx.h"
+#include "tim.h"
 
+// Privatni prototipovi
 static void
 tim10_init ();
+
+// Promenljive
+volatile int16_t brzina;
+volatile uint16_t enc;
+volatile uint32_t sys_time;
 
 void
 timer_init ()
@@ -37,4 +44,38 @@ tim10_init ()
   TIM10->SR &= ~(0b1 << 0); // Resetovanje statusnog bita
 
   TIM10->CR1 |= (0b1 << 2); // "Zabrana" resetovanja (reinicijalizacije) tajmera
+
+  const uint8_t tim10_prekid = 25;
+  NVIC->ISER[tim10_prekid/32] |= (0b1 << (tim10_prekid % 32));
+
+  TIM10->CR1 |= (0b1 << 0); // Uključujemo brojač/tajmer
+}
+
+bool
+timer_delay (uint32_t ms) // ms - milisekunde
+{
+  uint32_t start = sys_time; // Sačuvano vreme ulaska u funkciju.
+
+  while ((start + ms) > sys_time)
+    {
+      __NOP();
+    }
+
+  return true;
+}
+
+void
+TIM1_UP_TIM10_IRQHandler ()
+{
+  if (TIM10->SR & (0b1 << 0))
+    {
+      TIM10->SR &= ~(0b1 << 0); // Samostalno se postavlja na jedinicu. Mi moramo da ga nuliramo kako bi naredni prekid mogao da se izvrši.
+
+      // 1ms
+      sys_time++;
+
+      enc = TIM2->CNT;
+
+      brzina = tim_brzina_1();
+    }
 }

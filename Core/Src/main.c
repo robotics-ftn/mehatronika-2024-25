@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -95,20 +96,61 @@ main (void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init ();
+  MX_TIM10_Init ();
+  MX_TIM2_Init ();
   /* USER CODE BEGIN 2 */
   // gpio_init ();
-   timer_init ();
+  timer_init ();
   // uart_init ();
   // ....
+
+//  LL_TIM_EnableCounter(TIM10);
+  LL_TIM_EnableCounter (TIM2);
+
+  __enable_irq ();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t stanje = 0;
+
   while (1)
     {
 
-      GPIOA->ODR ^= (0b1 << 5);
-      LL_mDelay (1000);
+      switch (stanje)
+	{
+	case 0:
+	  // Promena stanja LED
+	  // Inicijalizacija stanja
+	  // -
+
+	  // Telo stanja
+	  GPIOA->ODR ^= (0b1 << 5);
+
+	  // Uslov prelaska
+	  stanje++;
+	  break;
+
+	case 1:
+	  // Čekanje x ms
+	  // Inicijalizacija stanja
+	  // -
+
+	  // Telo stanja
+	  // -
+
+	  // Uslov prelaska
+	  if (timer_delay (100))
+	    {
+	      stanje = 0; // vrati se na po�?etno stanje
+	    }
+	  break;
+
+	}
+
+//      GPIOA->ODR ^= (0b1 << 5);
+////      LL_mDelay (100);
+//      timer_delay (1000);
 
       /* USER CODE END WHILE */
 

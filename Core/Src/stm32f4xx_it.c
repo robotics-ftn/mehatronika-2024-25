@@ -42,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+//volatile extern uint32_t sys_time;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
