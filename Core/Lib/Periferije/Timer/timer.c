@@ -10,6 +10,8 @@
 volatile uint32_t system_ms = 0;
 volatile sTimerFLags_t timer_flags;
 
+static uint32_t timeout_ms;
+
 void TIM1_Init()
 {
 	// RCC clock signal enable za TIM1
@@ -34,8 +36,17 @@ void TIM1_Init()
 	TIM1->CR1 |= (0b1 << 0);
 
 	NVIC->ISER[0] |= (0b1 << 25);
-
 }
+
+void TIM1_timeout(uint32_t ms)
+{
+	if (!timer_flags.flg_timeout_start) {
+		timer_flags.flg_timeout_start = 1;
+		timer_flags.flg_timeout_end = 0;
+		timeout_ms = ms;
+	}
+}
+
 
 void TIM1_UP_TIM10_IRQHandler()
 {
@@ -49,6 +60,16 @@ void TIM1_UP_TIM10_IRQHandler()
 
 		if(system_ms == (1000 * 85))
 			timer_flags.flg_85s = 1;
+
+		if (timer_flags.flg_timeout_start) {
+			timeout_ms--;
+
+			if (timeout_ms == 0) {
+				timer_flags.flg_timeout_end = 1;
+				timer_flags.flg_timeout_start = 0;
+			}
+		}
+
 
 		TIM1->SR &= ~(0b1 << 0); // ovo zahteva MCU od nas
 	}

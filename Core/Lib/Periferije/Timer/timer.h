@@ -23,5 +23,6 @@ volatile extern uint32_t system_ms;
 volatile extern sTimerFLags_t timer_flags;
 
 void TIM1_Init();
+void TIM1_timeout(uint32_t ms);
 
 #endif /* LIB_PERIFERIJE_TIMER_TIMER_H_ */

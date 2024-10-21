@@ -94,11 +94,16 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  TIM1_timeout(1000);
   while (1)
   {
     /* USER CODE END WHILE */
-	  if((system_ms % 1000) == 0)
+	  if (timer_flags.flg_timeout_end) {
 		  LED_Toggle();
+		  TIM1_timeout(1000);
+	  }
+
 
     /* USER CODE BEGIN 3 */
   }
