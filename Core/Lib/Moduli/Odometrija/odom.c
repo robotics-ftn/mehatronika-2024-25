@@ -14,6 +14,7 @@ static const float L = 0.22; // razmak izmedju tockova
 
 static const float inc2rad = 0.000766616; // 2 x PI / (4x2048)
 
+
 void
 odom_init(float x, float y, float theta) {
 	odom->x = x;
