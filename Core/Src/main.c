@@ -20,12 +20,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "../Lib/periferije/gpio/gpio.h"
 #include "../Lib/periferije/timer/timer.h"
+#include "../Lib/periferije/encoder/encoder.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,17 +97,56 @@ main (void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init ();
+  MX_TIM10_Init ();
   /* USER CODE BEGIN 2 */
 //  gpio_init ();
-  timer_init ();
+//  timer_init ();
+  LL_TIM_EnableIT_UPDATE (TIM10); // Dozvola prekida
+  LL_TIM_EnableCounter (TIM10); // Ukljucivanje tajmera
+
+  __enable_irq (); // Dozvola svih prekida
+//  __disable_irq(); // Iskljucivanje svih prekida
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t stanje = 0; // Pocetno stanje je 0
+
   while (1)
     {
-      GPIOA->ODR ^= (1 << LED_PIN);
-      LL_mDelay (100);
+//      GPIOA->ODR ^= (1 << LED_PIN);
+//      LL_mDelay (100);
+
+      // Masina konacnih stanja
+      switch (stanje)
+	{
+	case 0:
+	  // Inicijalizacija
+	  // -
+
+	  // Telo
+	  GPIOA->ODR ^= (1 << LED_PIN);
+
+	  // Uslov prelaska (moze ih biti vise)
+	  stanje++;
+
+	  break;
+
+	case 1:
+	  // Inicijalizacija
+	  // -
+
+	  // Telo
+	  // -
+
+	  // Uslov prelaska (moze ih biti vise)
+	  if (timer_delay(1000))
+	    {
+	      stanje = 0;
+	    }
+
+	  break;
+	}
 
       /* USER CODE END WHILE */
 

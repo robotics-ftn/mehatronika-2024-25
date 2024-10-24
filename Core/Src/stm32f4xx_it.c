@@ -42,7 +42,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern uint32_t sys_time;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -205,6 +205,28 @@ SysTick_Handler (void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
+
+/**
+ * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
+ */
+void
+TIM1_UP_TIM10_IRQHandler (void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+  if (TIM10->SR & (0b1 << 0))
+    {
+      TIM10->SR &= ~(0b1 << 0);
+
+      // Telo prekida...
+      sys_time++;
+
+    }
+  /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
+
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
