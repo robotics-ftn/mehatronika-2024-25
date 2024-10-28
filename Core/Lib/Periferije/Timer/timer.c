@@ -6,11 +6,14 @@
  */
 
 #include "timer.h"
+#include "Moduli/Odometrija/odom.h"
 
 volatile uint32_t system_ms = 0;
 volatile sTimerFLags_t timer_flags;
 
 static uint32_t timeout_ms;
+
+static uint16_t odom_loop_ms;
 
 void TIM1_Init()
 {
@@ -34,6 +37,8 @@ void TIM1_Init()
 	TIM1->DIER |= (0b1 << 0);
 	// upalimo tajmerski brojac (enable)
 	TIM1->CR1 |= (0b1 << 0);
+
+	odom_loop_ms = 5; // [ms]
 
 	NVIC->ISER[0] |= (0b1 << 25);
 }
@@ -68,6 +73,12 @@ void TIM1_UP_TIM10_IRQHandler()
 				timer_flags.flg_timeout_end = 1;
 				timer_flags.flg_timeout_start = 0;
 			}
+		}
+
+
+		if ((system_ms % odom_loop_ms) == 0 )
+		{
+			odom_update(odom_loop_ms);
 		}
 
 

@@ -24,6 +24,9 @@
 /* USER CODE BEGIN Includes */
 #include "Periferije/GPIO/gpio.h"
 #include "Periferije/Timer/timer.h"
+#include "Moduli/Encoder/encoder.h"
+#include "Moduli/Odometrija/odom.h"
+#include "Periferije/uart/uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,6 +79,9 @@ int main(void)
   /* USER CODE BEGIN Init */
   LED_Init();
   TIM1_Init();
+  encoder1_init();
+  odom_init(0, 0, 0);
+  uart2_init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -98,6 +104,13 @@ int main(void)
   TIM1_timeout(1000);
   while (1)
   {
+
+	  if (timer_flags.flg_timeout_end) {
+		  uart2_send_string("Hello world\n");
+		  TIM1_timeout(1000);
+
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

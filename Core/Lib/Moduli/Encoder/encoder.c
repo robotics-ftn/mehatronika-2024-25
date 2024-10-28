@@ -25,10 +25,8 @@ encoder1_init() {
 
 int32_t
 encoder1_inc_delta() {
-	uint32_t cnt = TIM2->CNT;
-	int32_t delta = (int32_t)(cnt - prev_cnt);
-	prev_cnt = cnt;
-
+	int32_t delta = (int32_t)TIM2->CNT;
+	TIM2->CNT = 0;
 	return delta;
 }
 
@@ -71,8 +69,8 @@ encoder1_tim_init() {
 	TIM2->SMCR &= ~(0b111 << 0);
 	TIM2->SMCR |=  (0b011 << 0);
 
-	TIM2->ARR = 0xFFFFFFFF;
-	TIM2->CNT = (0xFFFFFFFF >> 1);
+	TIM2->ARR = 0xFFFF - 1;
+	TIM2->CNT = 0;
 
 	// update generation:
 	// Re-initialize the counter and generates an update of the registers
