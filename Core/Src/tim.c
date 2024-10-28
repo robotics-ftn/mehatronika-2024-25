@@ -61,12 +61,12 @@ MX_TIM2_Init (void)
 
   LL_TIM_SetEncoderMode (TIM2, LL_TIM_ENCODERMODE_X4_TI12);
   LL_TIM_IC_SetActiveInput (TIM2, LL_TIM_CHANNEL_CH1,
-			    LL_TIM_ACTIVEINPUT_DIRECTTI);
+  LL_TIM_ACTIVEINPUT_DIRECTTI);
   LL_TIM_IC_SetPrescaler (TIM2, LL_TIM_CHANNEL_CH1, LL_TIM_ICPSC_DIV1);
   LL_TIM_IC_SetFilter (TIM2, LL_TIM_CHANNEL_CH1, LL_TIM_IC_FILTER_FDIV1);
   LL_TIM_IC_SetPolarity (TIM2, LL_TIM_CHANNEL_CH1, LL_TIM_IC_POLARITY_RISING);
   LL_TIM_IC_SetActiveInput (TIM2, LL_TIM_CHANNEL_CH2,
-			    LL_TIM_ACTIVEINPUT_DIRECTTI);
+  LL_TIM_ACTIVEINPUT_DIRECTTI);
   LL_TIM_IC_SetPrescaler (TIM2, LL_TIM_CHANNEL_CH2, LL_TIM_ICPSC_DIV1);
   LL_TIM_IC_SetFilter (TIM2, LL_TIM_CHANNEL_CH2, LL_TIM_IC_FILTER_FDIV1);
   LL_TIM_IC_SetPolarity (TIM2, LL_TIM_CHANNEL_CH2, LL_TIM_IC_POLARITY_RISING);
@@ -90,6 +90,11 @@ MX_TIM10_Init (void)
   /* Peripheral clock enable */
   LL_APB2_GRP1_EnableClock (LL_APB2_GRP1_PERIPH_TIM10);
 
+  /* TIM10 interrupt Init */
+  NVIC_SetPriority (TIM1_UP_TIM10_IRQn,
+		    NVIC_EncodePriority (NVIC_GetPriorityGrouping (), 0, 0));
+  NVIC_EnableIRQ (TIM1_UP_TIM10_IRQn);
+
   TIM_InitStruct.Prescaler = 83;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.Autoreload = 999;
@@ -103,7 +108,7 @@ MX_TIM10_Init (void)
 int16_t
 tim_brzina_1 ()
 {
-  int16_t brzina = (int16_t)(TIM2->CNT);
+  int16_t brzina = (int16_t) (TIM2->CNT);
   TIM2->CNT = 0;
   return brzina;
 }

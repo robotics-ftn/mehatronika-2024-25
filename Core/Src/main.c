@@ -27,6 +27,9 @@
 /* USER CODE BEGIN Includes */
 #include "../Lib/periferije/gpio/gpio.h"
 #include "../Lib/periferije/timer/timer.h"
+#include "../Lib/periferije/uart/uart.h"
+
+#include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,11 +103,14 @@ main (void)
   MX_TIM2_Init ();
   /* USER CODE BEGIN 2 */
   // gpio_init ();
-  timer_init ();
-  // uart_init ();
+  // timer_init ();
+  uart_init ();
   // ....
 
-//  LL_TIM_EnableCounter(TIM10);
+  odometrija_init ();
+
+  LL_TIM_EnableIT_UPDATE (TIM10);
+  LL_TIM_EnableCounter (TIM10);
   LL_TIM_EnableCounter (TIM2);
 
   __enable_irq ();
@@ -139,8 +145,9 @@ main (void)
 	  // Telo stanja
 	  // -
 
+	  //LL_mDelay(Delay)
 	  // Uslov prelaska
-	  if (timer_delay (100))
+	  if (timer_delay (1000))
 	    {
 	      stanje = 0; // vrati se na po�?etno stanje
 	    }
@@ -182,7 +189,7 @@ SystemClock_Config (void)
 
     }
   LL_RCC_PLL_ConfigDomain_SYS (LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_8, 84,
-			       LL_RCC_PLLP_DIV_2);
+  LL_RCC_PLLP_DIV_2);
   LL_RCC_PLL_Enable ();
 
   /* Wait till PLL is ready */

@@ -23,6 +23,8 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "tim.h"
+#include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +44,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-//volatile extern uint32_t sys_time;
+volatile extern uint32_t sys_time;
+volatile extern int16_t brzina;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -205,6 +208,32 @@ SysTick_Handler (void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
+
+/**
+ * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
+ */
+void
+TIM1_UP_TIM10_IRQHandler (void)
+{
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+  if (TIM10->SR & (0b1 << 0))
+    {
+      TIM10->SR &= ~(0b1 << 0); // Samostalno se postavlja na jedinicu. Mi moramo da ga nuliramo kako bi naredni prekid mogao da se izvrši.
+
+      // 1ms
+      sys_time++;
+
+//      enc = TIM2->CNT;
+
+//      brzina = tim_brzina_1 ();
+      odometrija ();
+    }
+  /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
+
+  /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
+
+  /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
