@@ -8,6 +8,11 @@
 #include "stm32f401xe.h"
 #include "encoder.h"
 
+void
+encoder_init_all() {
+	encoder_desni_init();
+	encoder_levi_init();
+}
 
 void
 encoder_desni_init() {
@@ -53,9 +58,53 @@ encoder_desni_init() {
 
 }
 
+
+void
+encoder_levi_init() {
+	/*
+	 * PA0  --> TIM5 CH1
+	 * PA1  --> TIM5 CH2
+	 */
+
+	// Enable clock signal
+	RCC->APB1ENR |= RCC_APB1ENR_TIM5EN;
+	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+
+	GPIOA->MODER &= ~(0b11 << 0 * 2);
+	GPIOA->MODER |=  (0b10 << 0 * 2); // alt. fun.
+	GPIOA->AFR[0] &= ~(0b1111 << 0 * 4);
+	GPIOA->AFR[0] |=  (2 << 0 * 4);
+
+	GPIOA->MODER &= ~(0b11 << 1 * 2);
+	GPIOA->MODER |=  (0b10 << 1 * 2); // alt. fun.
+	GPIOA->AFR[0] &= ~(0b1111 << 1 * 4);
+	GPIOA->AFR[0] |=  (2 << 1 * 4);
+
+
+	// Encoder 3 mode (count on both edges) - kvadraturno dekodiranje
+	TIM5->SMCR &= ~(0b111 << 0);
+	TIM5->SMCR |=  (0b011 << 0);
+
+	// max inkremenata do koliko broji
+	TIM5->ARR = 0xFFFF;
+
+	// init. counter (update generation)
+	TIM5->EGR |= (0b1 << 0);
+
+	// enable timer
+	TIM5->CR1 |= (0b1 << 0);
+}
+
 int32_t
 encoder_desni_get_inc() {
 	int32_t tmp = (int32_t)TIM2->CNT;
 	TIM2->CNT = 0;
+	return tmp;
+}
+
+int32_t
+encoder_levi_get_inc() {
+	int32_t tmp = (int32_t)TIM5->CNT;
+	TIM5->CNT = 0;
 	return tmp;
 }

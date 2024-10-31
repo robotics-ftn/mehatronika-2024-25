@@ -10,8 +10,9 @@
 #include <math.h>
 
 const float
-L = 225, 				// razmak izmedju tockova enkodera
-r = 35,	 				// poluprecnik enkoderskih tockova
+L = 0.259, 				// razmak izmedju tockova enkodera u [m]
+D = 0.078,
+r = 0.078/2.0, 			// poluprecnik enkoderskih tockova
 inc2rad = 0.00076699; 	// pretvaranje inkremenata enkodera u radijane
 
 static odom_t odom;
@@ -33,7 +34,7 @@ odom_update(uint16_t dt_ms) {
 	float v_l, v_d, dt_s;
 
 	v_l_inc = encoder_desni_get_inc();
-	v_d_inc = encoder_desni_get_inc();
+	v_d_inc = encoder_levi_get_inc();
 
 	dt_s = dt_ms / 1000.0;
 

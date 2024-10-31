@@ -6,6 +6,9 @@
  */
 
 #include "timer.h"
+#include "Moduli/odom/odom.h"
+
+static const uint8_t odom_update_loop_ms = 5;
 
 static uint32_t system_ms;
 static uint32_t timeout_cnt;
@@ -16,6 +19,7 @@ timer_flgs_t timer_flgs = {
 		.flg_timeout_start = 0,
 		.flg_timeout_end = 0
 };
+
 
 static void
 init_variables();
@@ -105,6 +109,9 @@ void TIM1_UP_TIM10_IRQHandler()
 				timer_flgs.flg_timeout_end = 1;
 			}
 		}
+
+		if (system_ms % odom_update_loop_ms == 0)
+			odom_update(odom_update_loop_ms);
 
 		TIM1->SR &= ~(0b1 << 0);
 	}

@@ -23,6 +23,8 @@
 /* USER CODE BEGIN Includes */
 #include "Periferije/gpio/gpio.h"
 #include "Periferije/Timer/timer.h"
+#include "Periferije/encoder/encoder.h"
+#include "Periferije/uart/uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,11 +73,14 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
   GPIO_LED_Init();
   TIM1_Init();
+  encoder_init_all();
+  uart2_init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -94,7 +99,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   TIM1_timeout(500);
-
+  uint8_t data[] = {73, 30, 56, 30, 68, 30, 92, 30, 113};
   while (1)
   {
 
@@ -102,6 +107,9 @@ int main(void)
 	  {
 		  GPIO_LED_Toggle();
 		  TIM1_timeout(500);
+
+		  //uart2_echo();
+		  uart2_send_data_array(data, sizeof(data)/sizeof(data[0]));
 	  }
 
 
