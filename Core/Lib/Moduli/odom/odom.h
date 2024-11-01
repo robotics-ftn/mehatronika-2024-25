@@ -21,6 +21,6 @@ typedef struct
 }odom_t;
 
 void odom_init(float x, float y, float theta);
-void odom_update(uint16_t dt_ms);
+void odom_update(uint32_t dt_ms);
 
 #endif /* LIB_MODULI_ODOM_ODOM_H_ */

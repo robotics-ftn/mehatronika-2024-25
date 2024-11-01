@@ -110,7 +110,7 @@ void TIM1_UP_TIM10_IRQHandler()
 			}
 		}
 
-		if (system_ms % odom_update_loop_ms == 0)
+		if ((system_ms % odom_update_loop_ms) == 0)
 			odom_update(odom_update_loop_ms);
 
 		TIM1->SR &= ~(0b1 << 0);

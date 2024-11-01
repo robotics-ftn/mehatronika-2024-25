@@ -77,10 +77,11 @@ int main(void)
 	HAL_Init();
 
   /* USER CODE BEGIN Init */
-  GPIO_LED_Init();
+//  GPIO_LED_Init();
   TIM1_Init();
   encoder_init_all();
   uart2_init();
+  odom_init(0, 0, 0);
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -93,7 +94,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  GPIO_LED_Toggle();
+//  GPIO_LED_Toggle();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,7 +106,7 @@ int main(void)
 
 	  if (timer_flgs.flg_timeout_end)
 	  {
-		  GPIO_LED_Toggle();
+//		  GPIO_LED_Toggle();
 		  TIM1_timeout(500);
 
 		  //uart2_echo();

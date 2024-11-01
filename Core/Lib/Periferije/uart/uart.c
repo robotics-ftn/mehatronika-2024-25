@@ -92,7 +92,6 @@ uart2_echo() {
 
 		rb_read = (rb_read + 1) % BUFFER_SIZE;
 	}
-
 }
 
 void

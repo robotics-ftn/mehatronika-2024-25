@@ -28,13 +28,13 @@ odom_init(float x, float y, float theta) {
 }
 
 void
-odom_update(uint16_t dt_ms) {
+odom_update(uint32_t dt_ms) {
 	int32_t v_l_inc;
 	int32_t v_d_inc;
 	float v_l, v_d, dt_s;
 
-	v_l_inc = encoder_desni_get_inc();
-	v_d_inc = encoder_levi_get_inc();
+	v_d_inc = encoder_desni_get_inc();
+	v_l_inc = encoder_levi_get_inc();
 
 	dt_s = dt_ms / 1000.0;
 
@@ -49,16 +49,21 @@ odom_update(uint16_t dt_ms) {
 	odom.y += odom.v * sin(odom.theta + odom.w * dt_s / 2.0) * dt_s;
 
 	odom.theta += odom.w * dt_s;
-	odom.theta = normalize_angle(odom.theta);
+	if (odom.theta > M_PI)
+		odom.theta -= (2 * M_PI);
+	if (odom.theta < -M_PI)
+		odom.theta += (2 * M_PI);
+//	odom.theta = normalize_angle(odom.theta);
 }
 
 static float
 normalize_angle(float angle) {
+	float tmp = angle;
 	if (angle > M_PI)
-		angle -= 2 * M_PI;
+		tmp -= 2 * M_PI;
 	if (angle < - M_PI)
-		angle += 2 * M_PI;
+		tmp += 2 * M_PI;
 
-	return angle;
+	return tmp;
 }
 

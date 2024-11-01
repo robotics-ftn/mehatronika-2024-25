@@ -8,6 +8,9 @@
 #include "stm32f401xe.h"
 #include "encoder.h"
 
+#define ENC_MAX_CNT		0xFFFF
+#define ENC_START_CNT	(ENC_MAX_CNT >> 1)
+
 void
 encoder_init_all() {
 	encoder_desni_init();
@@ -47,14 +50,19 @@ encoder_desni_init() {
 	TIM2->SMCR &= ~(0b111 << 0);
 	TIM2->SMCR |=  (0b011 << 0);
 
-	// max inkremenata do koliko broji
-	TIM2->ARR = 0xFFFF;
 
-	// init. counter (update generation)
-	TIM2->EGR |= (0b1 << 0);
+	// max inkremenata do koliko broji
+	TIM2->ARR = ENC_MAX_CNT - 1;
+	TIM2->PSC = 0;
+
+	TIM2->CCMR1 &= ~(0b11 << 0 | 0b11 << 8);
+	TIM2->CCMR1 |=  (0b01 << 0 | 0b01 << 8); //IC1 -> TI1 & IC2 -> TI2
 
 	// enable timer
 	TIM2->CR1 |= (0b1 << 0);
+	// init. counter (update generation)
+	TIM2->EGR |= (0b1 << 0);
+	TIM2->CNT = ENC_START_CNT - 1;
 
 }
 
@@ -86,25 +94,33 @@ encoder_levi_init() {
 	TIM5->SMCR |=  (0b011 << 0);
 
 	// max inkremenata do koliko broji
-	TIM5->ARR = 0xFFFF;
+	TIM5->ARR = ENC_MAX_CNT - 1;
+	TIM5->PSC = 0;
 
-	// init. counter (update generation)
-	TIM5->EGR |= (0b1 << 0);
+	TIM5->CCMR1 &= ~(0b11 << 0 | 0b11 << 8);
+	TIM5->CCMR1 |=  (0b01 << 0 | 0b01 << 8); //IC1 -> TI1 & IC2 -> TI2
 
 	// enable timer
 	TIM5->CR1 |= (0b1 << 0);
+	// init. counter (update generation)
+	TIM5->EGR |= (0b1 << 0);
+
+	TIM5->CNT = ENC_START_CNT - 1;
+
+
+
 }
 
 int32_t
 encoder_desni_get_inc() {
-	int32_t tmp = (int32_t)TIM2->CNT;
-	TIM2->CNT = 0;
+	int32_t tmp = (TIM2->CNT - ENC_START_CNT);
+	TIM2->CNT = ENC_START_CNT;
 	return tmp;
 }
 
 int32_t
 encoder_levi_get_inc() {
-	int32_t tmp = (int32_t)TIM5->CNT;
-	TIM5->CNT = 0;
+	int32_t tmp = (TIM5->CNT - ENC_START_CNT);
+	TIM5->CNT = ENC_START_CNT;
 	return tmp;
 }
