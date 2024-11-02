@@ -28,6 +28,8 @@
 #include "../Lib/periferije/gpio/gpio.h"
 #include "../Lib/periferije/timer/timer.h"
 #include "../Lib/periferije/encoder/encoder.h"
+
+#include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -98,11 +100,18 @@ main (void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init ();
   MX_TIM10_Init ();
+  MX_TIM2_Init ();
   /* USER CODE BEGIN 2 */
 //  gpio_init ();
 //  timer_init ();
+//  encoder_init ();
+
+  odometrija_init ();
+
   LL_TIM_EnableIT_UPDATE (TIM10); // Dozvola prekida
   LL_TIM_EnableCounter (TIM10); // Ukljucivanje tajmera
+
+  LL_TIM_EnableCounter (TIM2); // Ukljucivanje tajmera
 
   __enable_irq (); // Dozvola svih prekida
 //  __disable_irq(); // Iskljucivanje svih prekida
@@ -140,7 +149,7 @@ main (void)
 	  // -
 
 	  // Uslov prelaska (moze ih biti vise)
-	  if (timer_delay(1000))
+	  if (timer_delay (1000))
 	    {
 	      stanje = 0;
 	    }

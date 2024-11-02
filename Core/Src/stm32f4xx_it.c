@@ -23,6 +23,8 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "../Lib/periferije/encoder/encoder.h"
+#include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -43,6 +45,8 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 extern uint32_t sys_time;
+
+static volatile int16_t temp;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -219,6 +223,9 @@ TIM1_UP_TIM10_IRQHandler (void)
 
       // Telo prekida...
       sys_time++;
+
+//      temp = encoder_brzina1 ();
+      odometrija ();
 
     }
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
