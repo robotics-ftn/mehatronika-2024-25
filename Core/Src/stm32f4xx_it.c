@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "tim.h"
+#include "../Lib/periferije/uart/uart.h"
 #include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
 
@@ -233,6 +234,27 @@ TIM1_UP_TIM10_IRQHandler (void)
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
+
+/**
+ * @brief This function handles USART6 global interrupt.
+ */
+void
+USART6_IRQHandler (void)
+{
+  /* USER CODE BEGIN USART6_IRQn 0 */
+  if (USART6->SR & (0b1 << 5))
+    {
+      USART6->SR &= ~(0b1 << 5); // Resetujemo bit kako bi prekid ponovo mogao da se izvrsi
+
+//      buffer[buffer_size] = USART6->DR;
+//      buffer_size++;
+      upisi_u_buffer (USART6->DR);
+    }
+  /* USER CODE END USART6_IRQn 0 */
+  /* USER CODE BEGIN USART6_IRQn 1 */
+
+  /* USER CODE END USART6_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

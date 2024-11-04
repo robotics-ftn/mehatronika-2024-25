@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -101,17 +102,21 @@ main (void)
   MX_GPIO_Init ();
   MX_TIM10_Init ();
   MX_TIM2_Init ();
+  MX_USART6_UART_Init ();
   /* USER CODE BEGIN 2 */
   // gpio_init ();
   // timer_init ();
-  uart_init ();
+  // uart_init ();
   // ....
-
   odometrija_init ();
 
   LL_TIM_EnableIT_UPDATE (TIM10);
   LL_TIM_EnableCounter (TIM10);
   LL_TIM_EnableCounter (TIM2);
+
+  LL_USART_EnableIT_RXNE (USART6);
+  LL_USART_EnableHalfDuplex (USART6);
+  LL_USART_Enable (USART6);
 
   __enable_irq ();
   /* USER CODE END 2 */
@@ -132,6 +137,8 @@ main (void)
 
 	  // Telo stanja
 	  GPIOA->ODR ^= (0b1 << 5);
+//	  uart_slanje('a');
+	  uart_slanje_str ("EUROBOT!");
 
 	  // Uslov prelaska
 	  stanje++;
@@ -189,7 +196,7 @@ SystemClock_Config (void)
 
     }
   LL_RCC_PLL_ConfigDomain_SYS (LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_8, 84,
-  LL_RCC_PLLP_DIV_2);
+			       LL_RCC_PLLP_DIV_2);
   LL_RCC_PLL_Enable ();
 
   /* Wait till PLL is ready */
