@@ -96,7 +96,6 @@ uart2_echo() {
 
 void
 uart2_send_data_array(unsigned char *data, unsigned int size) {
-
 	for (int i = 0; i < size; i ++) {
 		uart2_send_data(*data);
 		data++;
