@@ -20,6 +20,40 @@
 
 #define AX_LED			25
 
+static void ax_uart_send_byte(uint8_t byte);
+static void ax_uart_send_arr(uint8_t *data, uint8_t size);
+
+
+void
+ax_led(uint8_t id, uint8_t isOn) {
+	uint8_t params[] = {25, isOn};
+	ax_send_data(id, AX_WRITE, params, 2);
+}
+
+void
+ax_send_data(uint8_t id, uint8_t instruction, uint8_t *params, uint8_t param_size) {
+	const uint8_t len = param_size + 2;
+	uint16_t checksum = id + len + instruction;
+
+	/* [ 0xFF | 0xFF | Packet ID | Length | Instruction | Param 1 | … | Param N | CHKSUM ]*/
+
+	ax_uart_send_byte(AX_HEADER);
+	ax_uart_send_byte(AX_HEADER);
+	ax_uart_send_byte(id);
+	ax_uart_send_byte(len);
+	ax_uart_send_byte(instruction);
+
+	for (int i = 0; i < param_size; i++) {
+		checksum += *(params + i);
+	}
+
+	ax_uart_send_arr(params, param_size);
+
+	checksum = ~(checksum & 0xFF);
+
+	ax_uart_send_byte((uint8_t)checksum);
+}
+
 void
 ax_uart1_init() {
 	// Enable clock
@@ -35,6 +69,17 @@ ax_uart1_init() {
 
 	GPIOA->AFR[1] &= ~(0b1111 << 1 * 4);
 	GPIOA->AFR[1] |=  (7 << 1 * 4);
+
+	/*
+	 * the TX pin is always released when no data is transmitted.
+	 * Thus, it acts as a standard I/O in idle or in reception.
+	 * It means that the I/O must be configured so that TX is
+	 * configured as floating input (or output high open-drain)
+	 * when not driven by the USART.
+	 */
+	GPIOA->OTYPER |= (0b1 << 9); // open-drain
+	GPIOA->PUPDR  &= ~(0b11 << 9 * 2);
+	GPIOA->PUPDR  |=  (0b01 << 9 * 2); // pull-up
 
 	/*************************************
 	 * 				USART 1 config
@@ -63,11 +108,9 @@ ax_uart1_init() {
 	//enable half duplex
 	USART1->CR3 |=  (0b1 << 3);
 
-	// 9600 baudrate
-	// USARTDIV = 546.875
-
-	uint32_t div_fraction = 14;
-	uint32_t div_mantissa = 546;
+	// 115200 baudrate
+	uint32_t div_mantissa = 45;
+	uint32_t div_fraction = 9;
 
 	USART1->BRR = (div_mantissa << 4 | div_fraction);
 	USART1->CR1 |= (0b1 << 13); // enable USART
@@ -76,41 +119,14 @@ ax_uart1_init() {
 //	NVIC->ISER[(int)(38/32)] |= (0b1 << 38 % 32);
 }
 
-void
+static void
 ax_uart_send_byte(uint8_t byte) {
 	while( !( (USART1->SR & (0b1 << 6)) == (0b1 << 6)));
 	USART1->DR = byte;
 }
 
-
-void
-ax_led(uint8_t id, uint8_t isOn) {
-	uint8_t params[] = {25, isOn};
-	ax_send_data(id, AX_WRITE, params, 2);
-}
-
-
-void
-ax_send_data(uint8_t id, uint8_t instruction, uint8_t *params, uint8_t param_size) {
-	const uint8_t len = param_size + 2;
-	uint16_t checksum = 0;
-
-	checksum += id;
-	checksum += len;
-	checksum += instruction;
-
-
-	ax_uart_send_byte(AX_HEADER);
-	ax_uart_send_byte(AX_HEADER);
-	ax_uart_send_byte(id);
-	ax_uart_send_byte(len);
-	ax_uart_send_byte(instruction);
-
-	for (int i = 0; i < param_size; i++) {
-		checksum += *params;
-		ax_uart_send_byte(*params);
-		params++;
-	}
-
-	ax_uart_send_byte(~(checksum & 0xFF));
+static void
+ax_uart_send_arr(uint8_t *data, uint8_t size) {
+	for (int i = 0; i < size; i++)
+		ax_uart_send_byte(*data++);
 }
