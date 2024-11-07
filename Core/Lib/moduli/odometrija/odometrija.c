@@ -51,7 +51,7 @@ odometrija ()
   vl = vl_inc * inc2mm;
 
   w = (vd - vl) / b;
-  v = (vd + vl) / 2;
+  v = (vd + vl) / 2.0;
 
   fi += w;
   x += v * cos (fi);

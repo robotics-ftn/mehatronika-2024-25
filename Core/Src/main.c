@@ -28,6 +28,7 @@
 #include "../Lib/periferije/gpio/gpio.h"
 #include "../Lib/periferije/timer/timer.h"
 #include "../Lib/periferije/encoder/encoder.h"
+#include "../Lib/periferije/uart/uart.h"
 
 #include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
@@ -105,6 +106,7 @@ main (void)
 //  gpio_init ();
 //  timer_init ();
 //  encoder_init ();
+  uart_init ();
 
   odometrija_init ();
 
@@ -135,6 +137,8 @@ main (void)
 
 	  // Telo
 	  GPIOA->ODR ^= (1 << LED_PIN);
+	  // uart_send('a');
+	  uart_send_str("EUROBOT!!!");
 
 	  // Uslov prelaska (moze ih biti vise)
 	  stanje++;
