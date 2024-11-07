@@ -27,6 +27,8 @@
 #include "Moduli/Encoder/encoder.h"
 #include "Moduli/Odometrija/odom.h"
 #include "Periferije/uart/uart.h"
+#include "Moduli/dynamixel/ax.h"
+#include "Periferije/pwm/servo/servo.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -82,6 +84,8 @@ int main(void)
   encoder1_init();
   odom_init(0, 0, 0);
   uart2_init();
+  ax_uart1_init();
+  servo_init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -102,12 +106,37 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   TIM1_timeout(1000);
+  uint8_t led_state = 0;
+
+  uint8_t msg[] = {
+		  0xFF,
+		  0xFF,
+		  6, // ID
+		  4, // LEN
+		  3, // WRITE
+		  25, // LED
+		  1, // turn on
+		  ~(0xFF & 39),
+  };
+
+  float pos = 0;
+
   while (1)
   {
 
 	  if (timer_flags.flg_timeout_end) {
-		  uart2_send_string("Hello world\n");
-		  TIM1_timeout(1000);
+//		  uart2_send_string("Hello world\n");
+//		  ax_led(6, led_state);
+//		  for (int i = 0; i < (sizeof(msg) / sizeof(msg[0])); i++) {
+//			  ax_uart_send_byte(msg[i]);
+//		  }
+//		  uart2_send_data(msg, 8);
+//		  led_state = !led_state;
+		  TIM1_timeout(100);
+		  servo_set_position(pos);
+		  pos += 0.005;
+		  if (pos > 1)
+			  pos = 1;
 
 	  }
 

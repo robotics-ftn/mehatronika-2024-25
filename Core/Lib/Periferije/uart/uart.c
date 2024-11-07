@@ -33,7 +33,6 @@ uart2_init() {
 	GPIOA->AFR[0] &= ~(0b1111 << 2 * 4 | 0b1111 << 3 * 4);
 	GPIOA->AFR[0] |=  (7 << 2 * 4 | 7 << 3 * 4);
 
-
 	USART2->CR1 &= ~(0b1 << 15); // oversampling by 16
 
 	// 1 start, 8 data, n stop bits
@@ -54,22 +53,21 @@ uart2_init() {
 	USART2->CR2 &= ~(0b11 << 12);
 
 	// half duplex turn off
-	USART2->CR3 &= ~(0b1 << 3);
+//	USART2->CR3 &= ~(0b1 << 3);
+	//enable half duplex
+	USART2->CR3 |=  (0b1 << 3);
 
-
+	// 9600 baudrate
 	// USARTDIV = 273.4375
 	// div_fraction = 16 * 0.4375 = 7
 	uint32_t div_fraction = 7;
 	uint32_t div_mantissa = 273;
 
-
 	USART2->BRR = (div_mantissa << 4 | div_fraction);
-
 	USART2->CR1 |= (0b1 << 13); // enable USART
 
 	// enable prekid u NVIC
 	NVIC->ISER[(int)(38/32)] |= (0b1 << 38 % 32);
-
 
 	read = 0;
 	write = 0;
@@ -89,6 +87,13 @@ uart2_send_string(const char *data) {
 	{
 		uart2_send_ch(*data);
 		data++;
+	}
+}
+
+void
+uart2_send_data(uint8_t *data, uint32_t size) {
+	for (int i = 0; i < size; i++) {
+		uart2_send_ch(*data++);
 	}
 }
 
