@@ -21,6 +21,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -29,6 +30,7 @@
 #include "../Lib/periferije/timer/timer.h"
 #include "../Lib/periferije/encoder/encoder.h"
 #include "../Lib/periferije/uart/uart.h"
+#include "../Lib/periferije/pwm/pwm.h"
 
 #include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
@@ -102,11 +104,13 @@ main (void)
   MX_GPIO_Init ();
   MX_TIM10_Init ();
   MX_TIM2_Init ();
+  MX_USART6_UART_Init ();
   /* USER CODE BEGIN 2 */
 //  gpio_init ();
 //  timer_init ();
 //  encoder_init ();
-  uart_init ();
+//  uart_init ();
+  pwm_init ();
 
   odometrija_init ();
 
@@ -114,6 +118,10 @@ main (void)
   LL_TIM_EnableCounter (TIM10); // Ukljucivanje tajmera
 
   LL_TIM_EnableCounter (TIM2); // Ukljucivanje tajmera
+
+  LL_USART_EnableIT_RXNE(USART6); // Dozvola prekida
+  LL_USART_EnableHalfDuplex(USART6); // Ukljucujemo half-duplex rezim
+  LL_USART_Enable(USART6); // Ukljucujemo uart
 
   __enable_irq (); // Dozvola svih prekida
 //  __disable_irq(); // Iskljucivanje svih prekida
@@ -123,43 +131,71 @@ main (void)
   /* USER CODE BEGIN WHILE */
   uint8_t stanje = 0; // Pocetno stanje je 0
 
+  uint8_t led_on[] =
+    { 0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x01, 0xdd };
+  uint8_t led_off[] =
+    { 0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x00, 0xde };
+
+  uint8_t move_0[] =
+    { 0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xd8 };
+  uint8_t move_300[] =
+    { 0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd6 };
+
+  uint8_t ping[] =
+    { 0xff, 0xff, 0x01, 0x02, 0x01, 0xfb };
+
+  uint8_t move_0_1[] =
+    { 0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xdb };
+  uint8_t move_300_1[] =
+    { 0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd9 };
+
   while (1)
     {
-//      GPIOA->ODR ^= (1 << LED_PIN);
-//      LL_mDelay (100);
+////      GPIOA->ODR ^= (1 << LED_PIN);
+////      LL_mDelay (100);
+//
+//      // Masina konacnih stanja
+//      switch (stanje)
+//	{
+//	case 0:
+//	  // Inicijalizacija
+//	  // -
+//
+//	  // Telo
+//	  GPIOA->ODR ^= (1 << LED_PIN);
+//	  // uart_send('a');
+//	  uart_send_str("EUROBOT!!!");
+//
+//	  // Uslov prelaska (moze ih biti vise)
+//	  stanje++;
+//
+//	  break;
+//
+//	case 1:
+//	  // Inicijalizacija
+//	  // -
+//
+//	  // Telo
+//	  // -
+//
+//	  // Uslov prelaska (moze ih biti vise)
+//	  if (timer_delay (1000))
+//	    {
+//	      stanje = 0;
+//	    }
+//
+//	  break;
+//	}
 
-      // Masina konacnih stanja
-      switch (stanje)
-	{
-	case 0:
-	  // Inicijalizacija
-	  // -
+//      uart_send_bytes(led_on, 8);
+      uart_send_bytes (move_0_1, sizeof(move_0_1) / sizeof(*move_0_1));
+      LL_mDelay (1000);
+//      uart_send_bytes(led_off, 8);
+      uart_send_bytes (move_300_1, sizeof(move_300_1) / sizeof(*move_300_1));
+      LL_mDelay (1000);
 
-	  // Telo
-	  GPIOA->ODR ^= (1 << LED_PIN);
-	  // uart_send('a');
-	  uart_send_str("EUROBOT!!!");
-
-	  // Uslov prelaska (moze ih biti vise)
-	  stanje++;
-
-	  break;
-
-	case 1:
-	  // Inicijalizacija
-	  // -
-
-	  // Telo
-	  // -
-
-	  // Uslov prelaska (moze ih biti vise)
-	  if (timer_delay (1000))
-	    {
-	      stanje = 0;
-	    }
-
-	  break;
-	}
+//      uart_send_bytes(ping, sizeof(ping)/sizeof(*ping));
+//      LL_mDelay(1000);
 
       /* USER CODE END WHILE */
 
@@ -191,7 +227,7 @@ SystemClock_Config (void)
 
     }
   LL_RCC_PLL_ConfigDomain_SYS (LL_RCC_PLLSOURCE_HSI, LL_RCC_PLLM_DIV_8, 84,
-  LL_RCC_PLLP_DIV_2);
+			       LL_RCC_PLLP_DIV_2);
   LL_RCC_PLL_Enable ();
 
   /* Wait till PLL is ready */

@@ -24,6 +24,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "../Lib/periferije/encoder/encoder.h"
+#include "../Lib/periferije/uart/uart.h"
+
 #include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
 
@@ -47,6 +49,7 @@
 extern uint32_t sys_time;
 
 static volatile int16_t temp;
+static volatile uint8_t uart_test;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -227,12 +230,38 @@ TIM1_UP_TIM10_IRQHandler (void)
 //      temp = encoder_brzina1 ();
       odometrija ();
 
+//      if ((sys_time % 1000) == 0)
+//	{
+//	  uart_test = uart_buffer_citaj ();
+//	}
     }
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
 
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
 
   /* USER CODE END TIM1_UP_TIM10_IRQn 1 */
+}
+
+/**
+ * @brief This function handles USART6 global interrupt.
+ */
+void
+USART6_IRQHandler (void)
+{
+  /* USER CODE BEGIN USART6_IRQn 0 */
+  if (USART6->SR & (0b1 << 5))
+    {
+      USART6->SR &= ~(0b1 << 5);
+
+      // Ocitavamo pristigli podatak
+      //      buffer[buffer_size++] = USART6->DR;
+      //      buffer_size++;
+      uart_buffer_upis (USART6->DR);
+    }
+  /* USER CODE END USART6_IRQn 0 */
+  /* USER CODE BEGIN USART6_IRQn 1 */
+
+  /* USER CODE END USART6_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
