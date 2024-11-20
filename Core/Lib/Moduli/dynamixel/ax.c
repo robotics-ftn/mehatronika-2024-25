@@ -12,6 +12,26 @@ static void ax_send_array(uint8_t *data, uint8_t size);
 
 
 void
+ax_set_position_and_speed(uint8_t id, float angle, float rpm) {
+	ax_moving_speed(id, rpm);
+	ax_goal_position(id, angle);
+}
+
+void
+ax_moving_speed(uint8_t id, float rpm) {
+	uint16_t rpm_inc = (uint16_t)((rpm * 1024/114) - 1);
+	const char params[] = {
+			32, //instruction
+			(uint8_t)(rpm_inc & 0xFF),
+			(uint8_t)((rpm_inc >> 8) & 0xFF)
+	};
+
+	ax_send_command(id, AX_WRITE, params, 3);
+}
+
+
+
+void
 ax_goal_position(uint8_t id, float angle){
 	angle = (angle < 0) ? 0 :( angle > 300 ? 300 : angle);
 	uint16_t angle_inc = (uint16_t)((angle * 1024/300.0) - 1);

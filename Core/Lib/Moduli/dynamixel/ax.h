@@ -20,6 +20,8 @@
 #define AX_MOTOR2	6
 
 
+void ax_set_position_and_speed(uint8_t id, float angle, float rpm);
+void ax_moving_speed(uint8_t id, float rpm);
 void ax_goal_position(uint8_t id, float angle);
 void ax_led(uint8_t id, uint8_t state);
 void ax_send_command(uint8_t id, uint8_t instruction, uint8_t *params, uint8_t n_params);
