@@ -29,6 +29,7 @@
 #include "Periferije/uart/uart.h"
 #include "Moduli/dynamixel/ax.h"
 #include "Periferije/pwm/servo/servo.h"
+#include "Periferije/pwm/bdc/bdc.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -79,13 +80,14 @@ int main(void)
 	HAL_Init();
 
 	/* USER CODE BEGIN Init */
-//	LED_Init();
+	//	LED_Init();
 	TIM1_Init();
-//	encoder1_init();
-//	odom_init(0, 0, 0);
-//	uart2_init();
-	ax_uart1_init();
-	servo_init();
+	//	encoder1_init();
+	//	odom_init(0, 0, 0);
+	//	uart2_init();
+//	ax_uart1_init();
+//	servo_init();
+	motor1_init();
 	/* USER CODE END Init */
 
 	/* Configure the system clock */
@@ -105,7 +107,10 @@ int main(void)
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 
-	TIM1_timeout(1000);
+
+	const uint16_t timeout_ms = 100;
+	float motor_pwm = 0;
+	TIM1_timeout(timeout_ms);
 	uint8_t led_state = 0;
 
 	float pos = 0;
@@ -114,12 +119,17 @@ int main(void)
 	{
 
 		if (timer_flags.flg_timeout_end) {
+			motor1_set_voltage(motor_pwm);
+			motor_pwm += 0.006;
+			if (motor_pwm > 3)
+				motor_pwm = 3;
 
-			ax_led(5, led_state);
-			ax_led(6, 1 - led_state);
-			led_state = 1 - led_state;
-
-			TIM1_timeout(50);
+			TIM1_timeout(timeout_ms);
+			//			ax_led(5, led_state);
+			//			ax_led(6, 1 - led_state);
+			//			led_state = 1 - led_state;
+			//
+			//			TIM1_timeout(50);
 
 			//		  servo_set_position(pos);
 			//		  pos += 0.005;`
