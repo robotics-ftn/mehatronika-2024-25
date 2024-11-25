@@ -29,6 +29,7 @@
 #include "../Lib/periferije/gpio/gpio.h"
 #include "../Lib/periferije/timer/timer.h"
 #include "../Lib/periferije/uart/uart.h"
+#include "../Lib/periferije/pwm/pwm.h"
 
 #include "../Lib/moduli/odometrija/odometrija.h"
 /* USER CODE END Includes */
@@ -107,7 +108,9 @@ main (void)
   // gpio_init ();
   // timer_init ();
   // uart_init ();
+  pwm_init ();
   // ....
+
   odometrija_init ();
 
   LL_TIM_EnableIT_UPDATE (TIM10);
@@ -125,46 +128,69 @@ main (void)
   /* USER CODE BEGIN WHILE */
   uint8_t stanje = 0;
 
+  uint8_t led_on[] = {0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x01, 0xdd};
+  uint8_t led_off[] = {0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x00, 0xde};
+
+  uint8_t move_0[] = {0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xd8};
+  uint8_t move_300[] = {0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd6}; // 0x03ff - 300
+
+  uint8_t move_0_fe[] = {0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xdb};
+  uint8_t move_300_fe[] = {0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd9}; // 0x03ff - 300
+
+  uint8_t ping[] = {0xff, 0xff, 0x02, 0x02, 0x01, 0xfa};
+
   while (1)
     {
 
-      switch (stanje)
-	{
-	case 0:
-	  // Promena stanja LED
-	  // Inicijalizacija stanja
-	  // -
-
-	  // Telo stanja
-	  GPIOA->ODR ^= (0b1 << 5);
-//	  uart_slanje('a');
-	  uart_slanje_str ("EUROBOT!");
-
-	  // Uslov prelaska
-	  stanje++;
-	  break;
-
-	case 1:
-	  // Čekanje x ms
-	  // Inicijalizacija stanja
-	  // -
-
-	  // Telo stanja
-	  // -
-
-	  //LL_mDelay(Delay)
-	  // Uslov prelaska
-	  if (timer_delay (1000))
-	    {
-	      stanje = 0; // vrati se na po�?etno stanje
-	    }
-	  break;
-
-	}
+//      switch (stanje)
+//	{
+//	case 0:
+//	  // Promena stanja LED
+//	  // Inicijalizacija stanja
+//	  // -
+//
+//	  // Telo stanja
+//	  GPIOA->ODR ^= (0b1 << 5);
+////	  uart_slanje('a');
+//	  uart_slanje_str ("EUROBOT!");
+//
+//	  // Uslov prelaska
+//	  stanje++;
+//	  break;
+//
+//	case 1:
+//	  // Čekanje x ms
+//	  // Inicijalizacija stanja
+//	  // -
+//
+//	  // Telo stanja
+//	  // -
+//
+//	  //LL_mDelay(Delay)
+//	  // Uslov prelaska
+//	  if (timer_delay (1000))
+//	    {
+//	      stanje = 0; // vrati se na po�?etno stanje
+//	    }
+//	  break;
+//
+//	}
 
 //      GPIOA->ODR ^= (0b1 << 5);
 ////      LL_mDelay (100);
 //      timer_delay (1000);
+
+//      // Ukljuci
+////      uart_slanje_bytes (led_on, sizeof(led_on)/sizeof(*led_on));
+//      uart_slanje_bytes (move_0_fe, sizeof(move_0_fe)/sizeof(*move_0_fe));
+//      LL_mDelay(1000);
+//      // Iskljuci
+////      uart_slanje_bytes (led_off, sizeof(led_off)/sizeof(*led_off));
+//      uart_slanje_bytes (move_300_fe, sizeof(move_300_fe)/sizeof(*move_300_fe));
+//      LL_mDelay(1000);
+
+      uart_slanje_bytes(ping, sizeof(ping)/sizeof(*ping));
+      LL_mDelay(1000);
 
       /* USER CODE END WHILE */
 

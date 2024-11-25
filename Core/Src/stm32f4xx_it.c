@@ -47,6 +47,8 @@
 /* USER CODE BEGIN PV */
 volatile extern uint32_t sys_time;
 volatile extern int16_t brzina;
+
+volatile static uint8_t temp;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -228,6 +230,12 @@ TIM1_UP_TIM10_IRQHandler (void)
 
 //      brzina = tim_brzina_1 ();
       odometrija ();
+
+      if ((sys_time % 1000) == 0)
+	{
+	  temp = citanje_iz_buffera ();
+	}
+
     }
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
 

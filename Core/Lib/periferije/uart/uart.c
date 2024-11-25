@@ -15,8 +15,8 @@ uart6_init ();
 
 //static void
 //upisi_u_buffer (uint8_t podatak);
-static uint8_t
-citanje_iz_buffera ();
+//static uint8_t
+//citanje_iz_buffera ();
 
 volatile static uint8_t buffer[VELICINA_BUFFERA];
 volatile static uint8_t buffer_size = 0;
@@ -89,6 +89,15 @@ uart_slanje (uint8_t podatak)
 }
 
 void
+uart_slanje_bytes (uint8_t * niz, uint8_t niz_velicina)
+{
+  for (uint8_t i = 0; i < niz_velicina; i++)
+    {
+      uart_slanje(niz[i]);
+    }
+}
+
+void
 uart_slanje_str (char *str)
 {
   while (*str != '\0')
@@ -114,7 +123,7 @@ upisi_u_buffer (uint8_t podatak)
     }
 }
 
-static uint8_t
+uint8_t
 citanje_iz_buffera ()
 {
   uint8_t podatak;
