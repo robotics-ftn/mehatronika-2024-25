@@ -56,3 +56,15 @@ odometrija ()
   x += V * cos (fi);
   y += V * sin (fi);
 }
+
+float
+odometrija_brzina_d ()
+{
+  return vd;
+}
+
+float
+odometrija_brzina_l ()
+{
+  return vl;
+}

@@ -26,6 +26,7 @@
 #include "tim.h"
 #include "../Lib/periferije/uart/uart.h"
 #include "../Lib/moduli/odometrija/odometrija.h"
+#include "../Lib/moduli/pid/pid.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -230,6 +231,9 @@ TIM1_UP_TIM10_IRQHandler (void)
 
 //      brzina = tim_brzina_1 ();
       odometrija ();
+
+      // Potrebno je uraditi i za drugi motor
+      pid_brzina (0.0);
 
       if ((sys_time % 1000) == 0)
 	{

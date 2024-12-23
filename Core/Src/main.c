@@ -104,11 +104,13 @@ main (void)
   MX_TIM10_Init ();
   MX_TIM2_Init ();
   MX_USART6_UART_Init ();
+  MX_TIM11_Init ();
   /* USER CODE BEGIN 2 */
   // gpio_init ();
   // timer_init ();
   // uart_init ();
-  pwm_init ();
+  // pwm_init ();
+  motor1_init ();
   // ....
 
   odometrija_init ();
@@ -121,6 +123,9 @@ main (void)
   LL_USART_EnableHalfDuplex (USART6);
   LL_USART_Enable (USART6);
 
+  LL_TIM_CC_EnableChannel(TIM11, LL_TIM_CHANNEL_CH1);
+  LL_TIM_EnableCounter(TIM11);
+
   __enable_irq ();
   /* USER CODE END 2 */
 
@@ -128,16 +133,23 @@ main (void)
   /* USER CODE BEGIN WHILE */
   uint8_t stanje = 0;
 
-  uint8_t led_on[] = {0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x01, 0xdd};
-  uint8_t led_off[] = {0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x00, 0xde};
+  uint8_t led_on[] =
+    { 0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x01, 0xdd };
+  uint8_t led_off[] =
+    { 0xff, 0xff, 0x01, 0x04, 0x03, 0x19, 0x00, 0xde };
 
-  uint8_t move_0[] = {0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xd8};
-  uint8_t move_300[] = {0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd6}; // 0x03ff - 300
+  uint8_t move_0[] =
+    { 0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xd8 };
+  uint8_t move_300[] =
+    { 0xff, 0xff, 0x01, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd6 }; // 0x03ff - 300
 
-  uint8_t move_0_fe[] = {0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xdb};
-  uint8_t move_300_fe[] = {0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd9}; // 0x03ff - 300
+  uint8_t move_0_fe[] =
+    { 0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0x00, 0x00, 0xdb };
+  uint8_t move_300_fe[] =
+    { 0xff, 0xff, 0xfe, 0x05, 0x03, 0x1e, 0xff, 0x03, 0xd9 }; // 0x03ff - 300
 
-  uint8_t ping[] = {0xff, 0xff, 0x02, 0x02, 0x01, 0xfa};
+  uint8_t ping[] =
+    { 0xff, 0xff, 0x02, 0x02, 0x01, 0xfa };
 
   while (1)
     {
@@ -189,8 +201,22 @@ main (void)
 //      uart_slanje_bytes (move_300_fe, sizeof(move_300_fe)/sizeof(*move_300_fe));
 //      LL_mDelay(1000);
 
-      uart_slanje_bytes(ping, sizeof(ping)/sizeof(*ping));
-      LL_mDelay(1000);
+//      uart_slanje_bytes(ping, sizeof(ping)/sizeof(*ping));
+//      LL_mDelay(1000);
+
+      // PWM - RC servo
+////      TIM11->CCR1 = TIM11->ARR / 2;
+//      pwm_rc_dc(0);
+//      LL_mDelay(1000);
+////      TIM11->CCR1 = TIM11->ARR / 4;
+//      pwm_rc_dc(100);
+//      LL_mDelay(1000);
+      LL_TIM_OC_SetCompareCH1(TIM11, TIM11->ARR/2);
+
+//      // PWM - H-most (DC motor)
+//      GPIOA->ODR |= (0b1 << 10); // SLP
+//      GPIOA->ODR |= (0b1 << 8); // DIR
+//      TIM3->CCR2 = TIM3->ARR / 2; // PWM
 
       /* USER CODE END WHILE */
 

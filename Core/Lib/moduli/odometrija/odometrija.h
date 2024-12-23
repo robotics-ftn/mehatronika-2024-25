@@ -14,4 +14,9 @@ odometrija_init();
 void
 odometrija ();
 
+float
+odometrija_brzina_d ();
+float
+odometrija_brzina_l ();
+
 #endif /* LIB_MODULI_ODOMETRIJA_ODOMETRIJA_H_ */
