@@ -6,9 +6,12 @@
  */
 
 #include "timer.h"
-#include "Moduli/odom/odom.h"
+#include "Moduli/robot/robot.h"
+
 
 static const uint8_t odom_update_loop_ms = 5;
+//static const uint8_t bdc_velocity_loop_ms = 5;
+static const uint8_t robot_pos_loop_ms = 20;
 
 static uint32_t system_ms;
 static uint32_t timeout_cnt;
@@ -109,9 +112,17 @@ void TIM1_UP_TIM10_IRQHandler()
 				timer_flgs.flg_timeout_end = 1;
 			}
 		}
+		if ((system_ms % robot_pos_loop_ms) == 0)
+		{
+
+//			pos_update_loop();
+		}
 
 		if ((system_ms % odom_update_loop_ms) == 0)
-			odom_update(odom_update_loop_ms);
+		{
+			odom_update_loop(odom_update_loop_ms);
+
+		}
 
 		TIM1->SR &= ~(0b1 << 0);
 	}

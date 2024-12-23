@@ -12,15 +12,14 @@
 
 typedef struct
 {
-	float x;
-	float y;
-	float theta;
+	double x;
+	double y;
+	double theta;
 
-	float v;
-	float w;
+	double v;
+	double w;
 }odom_t;
 
-void odom_init(float x, float y, float theta);
-void odom_update(uint32_t dt_ms);
+void odom_init(odom_t* odom, float x, float y, float theta);
 
 #endif /* LIB_MODULI_ODOM_ODOM_H_ */
