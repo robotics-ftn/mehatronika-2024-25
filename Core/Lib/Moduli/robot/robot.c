@@ -55,15 +55,15 @@ odom_update_loop(uint32_t dt_ms) {
 	robot.odom.y += robot.odom.v * sin(robot.odom.theta + robot.odom.w * dt_s / 2.0) * dt_s;
 
 	robot.odom.theta += robot.odom.w * dt_s;
-	//	if (robot.odom.theta > M_PI)
-	//		robot.odom.theta -= (2 * M_PI);
-	//	if (robot.odom.theta < -M_PI)
-	//		robot.odom.theta += (2 * M_PI);
-	//	robot.odom.theta = normalize_angle(robot.odom.theta);
+
+	robot.odom.theta = normalize_angle(robot.odom.theta);
 }
 
 void
 pos_update_loop() {
+	float v;
+	float w;
+
 	float phi; //ugao  izmedju X ose i vektora ka targetu
 	float dist;
 	float phi_prim;
@@ -77,12 +77,12 @@ pos_update_loop() {
 	switch(robot.phase)
 	{
 	case 1: // Rotacija ka targetu
-		hbridge_voltage(rot_error, - rot_error);
-
+		w = rot_error * robot.Kp_rot; //hbridge_voltage(rot_error, - rot_error);
+		v = 0;
 		break;
 
 	case 2: // Translacija do targeta
-
+		// Voditi racuna i o orijentaciji
 		break;
 
 	case 3: // Finalna orijentacija
@@ -90,10 +90,17 @@ pos_update_loop() {
 		break;
 	}
 
+	robot.mot1.ref_speed = v + w * L / 2.0;
+	robot.mot2.ref_speed = v - w * L / 2.0;
 }
 
 void
 vel_update_loop() {
+	// linearno ubrzanje
+
+	// PID brzine levog i desnog
+
+	// Prosledjivanje napona na h-most
 
 }
 
@@ -121,7 +128,7 @@ robot_init() {
 			0.1, 	// Kd
 			1, 		// Ki
 			1		// max speed
-			);
+	);
 
 	bdc_motors_init(
 			&robot.mot2,
@@ -129,7 +136,7 @@ robot_init() {
 			0.1, 	// Kd
 			1, 		// Ki
 			1		// max speed m/s
-			);
+	);
 
 }
 
